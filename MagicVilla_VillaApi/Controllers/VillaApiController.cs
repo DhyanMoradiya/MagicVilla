@@ -93,9 +93,9 @@ namespace MagicVilla_VillaApi.Controllers
         public async Task<IActionResult> UpdateVilla(int id,[FromBody] VillaUpdateDTO updateDTO) {
             if(updateDTO == null || updateDTO.Id != id) { 
                 return BadRequest();
-            } 
-            var villa = await _dbVilla.GetAsync(u => u.Id == updateDTO.Id, Trecked : false);
-            if(villa == null)
+            }
+            var villa = await _dbVilla.GetAsync(u => u.Id == updateDTO.Id, Trecked: false);
+            if (villa == null)
             {
                 return NotFound();
             }
@@ -116,6 +116,7 @@ namespace MagicVilla_VillaApi.Controllers
                 return BadRequest();
             }
             var villa = await _dbVilla.GetAsync(u => u.Id == id, Trecked : false);
+
             if (villa == null)
             {
                 return NotFound();
