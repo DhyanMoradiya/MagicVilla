@@ -1,5 +1,5 @@
-﻿using MagicVilla_Web.Model;
-using MagicVilla_Web.Model.Dto;
+﻿using MagicVilla_Web.Models;
+using MagicVilla_Web.Models.Dto;
 using MagicVilla_Web.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -21,7 +21,7 @@ namespace MagicVilla_Web.Controllers
             if(response != null && response.IsSuccess) { 
                    villaList = JsonConvert.DeserializeObject<List<VillaDTO>>(Convert.ToString(response.Result));            
             }
-            return View();
+            return View(villaList);
         }
     }
 }

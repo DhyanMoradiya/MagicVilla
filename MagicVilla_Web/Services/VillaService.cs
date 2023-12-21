@@ -1,4 +1,4 @@
-﻿using MagicVilla_Web.Model.Dto;
+﻿using MagicVilla_Web.Models.Dto;
 using MagicVilla_Web.Models;
 using MagicVilla_Web.Services.IServices;
 using static MagicVilla_Utility.SD;
