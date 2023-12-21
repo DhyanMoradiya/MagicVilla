@@ -4,6 +4,7 @@ using MagicVilla_VillaApi.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using MagicVilla_VillaApi.Repository.IRepository;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MagicVilla_VillaApi.Controllers
 {
@@ -14,11 +15,13 @@ namespace MagicVilla_VillaApi.Controllers
         private readonly IVillaNumberRepository _dbVillaNumber;
         private APIResponse _response;
         private readonly IMapper _mapper;
-        public VillaNumberController(IVillaNumberRepository dbVillaNumber, IMapper mapper)
+        private readonly IVillaRepository _dbVilla;
+        public VillaNumberController(IVillaNumberRepository dbVillaNumber,IVillaRepository dbVilla, IMapper mapper)
         {
             _dbVillaNumber = dbVillaNumber;
             _mapper = mapper;
             _response = new APIResponse();
+            _dbVilla = dbVilla;
         }
 
 
@@ -95,6 +98,13 @@ namespace MagicVilla_VillaApi.Controllers
                     _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
+                if (await _dbVilla.GetAsync(u => u.Id == createDTO.VillaId) == null)
+                {
+                    _response.ErrorMessages.Add("Villa is not Exists");
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    return BadRequest(_response);
+                }
                 VillaNumber villaNumber = _mapper.Map<VillaNumber>(createDTO);
                 await _dbVillaNumber.CreateAsync(villaNumber);
                 _response.StatusCode = HttpStatusCode.OK;
@@ -163,6 +173,13 @@ namespace MagicVilla_VillaApi.Controllers
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
                     return NotFound(_response);
+                }
+                if (await _dbVilla.GetAsync(u => u.Id == updateDTO.VillaId) == null)
+                {
+                    _response.ErrorMessages.Add("Villa is not Exists");
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    return BadRequest(_response);
                 }
                 VillaNumber modal = _mapper.Map<VillaNumber>(updateDTO);
                 await _dbVillaNumber.UpdateAsync(modal);
