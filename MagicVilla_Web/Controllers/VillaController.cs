@@ -23,5 +23,26 @@ namespace MagicVilla_Web.Controllers
             }
             return View(villaList);
         }
-    }
+
+        public IActionResult CreateVilla()
+        {
+            return View();
+        }
+
+        [HttpPost]
+		public async Task<IActionResult> CreateVillaAsync(VillaCreateDTO villaCreateDTO)
+		{
+            if(ModelState.IsValid)
+            {
+				APIResponse response = await _villaService.CreateAsync<APIResponse>(villaCreateDTO);
+                if(response != null && response.IsSuccess)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+			}
+			return View(villaCreateDTO);
+		}
+
+
+	}
 }
