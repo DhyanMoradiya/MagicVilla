@@ -2,10 +2,12 @@
 using MagicVilla_VillaApi.Model;
 using MagicVilla_VillaApi.Model.Dto;
 using MagicVilla_VillaApi.Repository.IRepository;
+
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 using System.Net;
+
 
 namespace MagicVilla_VillaApi.Controllers
 {
