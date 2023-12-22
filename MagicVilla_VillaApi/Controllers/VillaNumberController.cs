@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MagicVilla_VillaApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/VillaNumberApi")]
     [ApiController]
     public class VillaNumberController : ControllerBase
     {
@@ -30,7 +30,7 @@ namespace MagicVilla_VillaApi.Controllers
         {
             try
             {
-                IEnumerable<VillaNumber> vilaNumberList = await _dbVillaNumber.GetAllAsync();
+                IEnumerable<VillaNumber> vilaNumberList = await _dbVillaNumber.GetAllAsync(IncludeProperties: "Villa");
                 _response.Result = vilaNumberList;
                 _response.StatusCode = HttpStatusCode.OK;
             }
@@ -44,7 +44,7 @@ namespace MagicVilla_VillaApi.Controllers
 
         }
 
-        [HttpGet("villaNo:int", Name = "GetVillaNumber")]
+        [HttpGet("{villaNo:int}", Name = "GetVillaNumber")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -108,7 +108,7 @@ namespace MagicVilla_VillaApi.Controllers
                 VillaNumber villaNumber = _mapper.Map<VillaNumber>(createDTO);
                 await _dbVillaNumber.CreateAsync(villaNumber);
                 _response.StatusCode = HttpStatusCode.OK;
-                return CreatedAtRoute("GetVillaNumber", villaNumber.VillaNo, _response);
+                return CreatedAtRoute("GetVillaNumber", new { villaNo = villaNumber.VillaNo }, _response);
             }
             catch (Exception e)
             {
@@ -119,7 +119,7 @@ namespace MagicVilla_VillaApi.Controllers
         }
 
 
-        [HttpDelete("villaNo:int")]
+        [HttpDelete("{villaNo:int}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -153,7 +153,7 @@ namespace MagicVilla_VillaApi.Controllers
 
         }
 
-        [HttpPut("villaNo:int")]
+        [HttpPut("{villaNo:int}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]

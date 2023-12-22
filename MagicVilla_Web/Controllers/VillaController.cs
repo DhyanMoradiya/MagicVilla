@@ -13,6 +13,7 @@ namespace MagicVilla_Web.Controllers
         {
             _villaService = villaService;
         }
+
         public async Task<IActionResult> IndexAsync()
         {
             List<VillaDTO> villaList = new();

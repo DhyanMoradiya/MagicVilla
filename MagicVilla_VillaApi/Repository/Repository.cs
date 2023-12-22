@@ -21,17 +21,24 @@ namespace MagicVilla_VillaApi.Repository
             await SaveAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null)
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? IncludeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if (filter != null)
             {
                 query = query.Where(filter);
             }
-            return await query.ToListAsync();
+			if (IncludeProperties != null)
+			{
+				foreach (var IncludeProp in IncludeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)) {
+                    var prop = IncludeProp.Trim();
+					query = query.Include(prop);
+				}
+			}
+			return await query.ToListAsync();
         }
 
-        public async Task<T> GetAsync(Expression<Func<T, bool>>? filter = null, bool Trecked = true)
+        public async Task<T> GetAsync(Expression<Func<T, bool>>? filter = null, bool Trecked = true, string? IncludeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if (filter != null)
@@ -41,6 +48,13 @@ namespace MagicVilla_VillaApi.Repository
             if (!Trecked)
             {
                 query = query.AsNoTracking<T>();
+            }
+            if(IncludeProperties != null)
+            {
+                foreach (var IncludeProp in IncludeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)) {
+					var prop = IncludeProp.Trim();
+					query = query.Include(prop);
+				}
             }
             return await query.FirstOrDefaultAsync();
         }
