@@ -38,7 +38,11 @@ namespace MagicVilla_VillaApi.Repository
             LocalUser user = await _db.localUsers.FirstOrDefaultAsync(u => u.UserName.ToLower() == loginRequestDTO.UserName.ToLower() && u.Password == loginRequestDTO.Password);
             if (user == null)
             {
-                return null;
+                return new LoginResponseDTO()
+                {
+                    Token = "",
+                    User = null
+                };
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
