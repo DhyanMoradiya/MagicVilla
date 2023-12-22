@@ -44,7 +44,7 @@ namespace MagicVilla_VillaApi.Controllers
 
         }
 
-        [HttpGet("id:int", Name = "GetVilla")]
+        [HttpGet("{id:int}", Name = "GetVilla")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -100,7 +100,7 @@ namespace MagicVilla_VillaApi.Controllers
                 Villa villa = _mapper.Map<Villa>(createDTO);
                 await _dbVilla.CreateAsync(villa);
                 _response.StatusCode = HttpStatusCode.OK;
-                return CreatedAtRoute("GetVilla", villa.Id, _response);
+                return CreatedAtRoute("GetVilla",new { id = villa.Id }, _response);
             }
             catch (Exception e)
             {
@@ -111,7 +111,7 @@ namespace MagicVilla_VillaApi.Controllers
         }
 
 
-        [HttpDelete("id:int")]
+        [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -145,7 +145,7 @@ namespace MagicVilla_VillaApi.Controllers
             
         }
 
-        [HttpPut("id:int")]
+        [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -178,7 +178,7 @@ namespace MagicVilla_VillaApi.Controllers
             return _response;
         }
 
-        [HttpPatch("id:int")]
+        [HttpPatch("{id:int}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]

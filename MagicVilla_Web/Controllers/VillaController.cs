@@ -30,6 +30,7 @@ namespace MagicVilla_Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
 		public async Task<IActionResult> CreateVillaAsync(VillaCreateDTO villaCreateDTO)
 		{
             if(ModelState.IsValid)
@@ -43,6 +44,53 @@ namespace MagicVilla_Web.Controllers
 			return View(villaCreateDTO);
 		}
 
+        public async Task<IActionResult> UpdateVilla (int id)
+        {
+            APIResponse response = await _villaService.GetAsync<APIResponse>(id);
+            if(response !=  null && response.IsSuccess)
+            {
+                VillaUpdateDTO updateDto =  JsonConvert.DeserializeObject<VillaUpdateDTO>(Convert.ToString(response.Result));
+                return View(updateDto);
+            }
+            return NotFound();
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+		public async Task<IActionResult> UpdateVilla(VillaUpdateDTO updateDto)
+		{
+            if (ModelState.IsValid)
+            {
+                APIResponse response = await _villaService.UpdateAsync<APIResponse>(updateDto.Id, updateDto);
+                if (response != null && response.IsSuccess)
+                {
+
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+			return View(updateDto);
+		}
+
+		public async Task<IActionResult> DeleteVilla(int id)
+		{
+            APIResponse response = await _villaService.GetAsync<APIResponse>(id);
+            if(response != null && response.IsSuccess)
+            {
+                VillaDTO dto = JsonConvert.DeserializeObject<VillaDTO>(Convert.ToString(response.Result));
+                return View(dto);
+            }
+            return NotFound();
+		}
+
+        [HttpPost]
+		public async Task<IActionResult> DeleteVilla(VillaDTO dto) { 
+            
+            APIResponse response = await _villaService.DeleteAsync<APIResponse>(dto.Id);
+            if(response!=null && response.IsSuccess)
+            {
+				return RedirectToAction(nameof(Index));
+			}
+            return NotFound();
+		}
 	}
 }

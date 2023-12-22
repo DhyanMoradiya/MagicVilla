@@ -4,6 +4,7 @@ namespace MagicVilla_Web.Models.Dto
 {
     public class VillaDTO
     {
+        [Required]
         public int Id { get; set; }
         [Required]
         [MaxLength(30)]
