@@ -1,31 +1,12 @@
 ﻿<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
     @if(TempData["success"] != null)
     {
         <script tyep="text/javascript">
-            Swal.fire({
-            icon: "success",
-            title: "@TempData["success"]"
-            @* toast: true, *@
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            })
-        </script>
-    }
-
-    @if(TempData["error"] != null)
-    {
-    <script tyep="text/javascript">
-        Swal.fire({
-            icon: "error",
-            title: "@TempData["error"]"
-                    toast: true,
+        const Toast = Swal.mixin({
+            toast: true,
             position: "top-end",
             showConfirmButton: false,
             timer: 3000,
@@ -34,6 +15,31 @@
                 toast.onmouseenter = Swal.stopTimer;
                 toast.onmouseleave = Swal.resumeTimer;
             }
-        })
+        });
+        Toast.fire({
+            icon: "success",
+            title: "@TempData["success"]"
+        });
+        </script>
+    }
+
+    @if(TempData["error"] != null)
+    {
+    <script tyep="text/javascript">
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+        Toast.fire({
+            icon: "success",
+            title: "@TempData["error"]"
+        });
     </script>
     }
