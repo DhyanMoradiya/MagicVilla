@@ -45,7 +45,7 @@ namespace MagicVilla_VillaApi.Controllers
             return Ok(_response);
         }
 
-        [HttpPost]
+        [HttpPost(Name ="register")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register(RegisterationRequestDTO registerationRequestDTO)
