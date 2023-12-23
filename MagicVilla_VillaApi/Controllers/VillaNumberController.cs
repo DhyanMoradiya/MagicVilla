@@ -27,9 +27,6 @@ namespace MagicVilla_VillaApi.Controllers
 
 
         [HttpGet]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<APIResponse> GetVillaNumbers()
         {
@@ -49,10 +46,7 @@ namespace MagicVilla_VillaApi.Controllers
 
         }
 
-        [Authorize]
         [HttpGet("{villaNo:int}", Name = "GetVillaNumber")]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

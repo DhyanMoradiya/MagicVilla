@@ -2,6 +2,7 @@
 using MagicVilla_Web.Models;
 using MagicVilla_Web.Services.IServices;
 using static MagicVilla_Utility.SD;
+using Newtonsoft.Json.Linq;
 
 namespace MagicVilla_Web.Services
 {
@@ -14,53 +15,55 @@ namespace MagicVilla_Web.Services
             VillaAPi = configuration.GetValue<string>("ServiceUrls:VillaAPI");
         }
 
-        public async Task<T> CreateAsync<T>(VillaCreateDTO dto)
+        public async Task<T> CreateAsync<T>(VillaCreateDTO dto, string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.POST,
                 Url = VillaAPi + "/api/VillaApi",
-                Data = dto
+                Data = dto,
+                Token = Token
             });
         }
 
-        public async Task<T> DeleteAsync<T>(int id)
+        public async Task<T> DeleteAsync<T>(int id, string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.DELETE,
-                Url = VillaAPi + "/api/VillaApi/" + id
+                Url = VillaAPi + "/api/VillaApi/" + id,
+                Token = Token
             });
         }
 
-        public async Task<T> GetAllAsync<T>()
+        public async Task<T> GetAllAsync<T>(string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.GET,
                 Url = VillaAPi + "/api/VillaApi",
-
+                Token = Token
             });
         }
 
-        public async Task<T> GetAsync<T>(int id)
+        public async Task<T> GetAsync<T>(int id, string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.GET,
                 Url = VillaAPi + "/api/VillaApi/" + id,
-
+                Token = Token
             });
         }
 
-        public async Task<T> UpdateAsync<T>(int id, VillaUpdateDTO dto)
+        public async Task<T> UpdateAsync<T>(int id, VillaUpdateDTO dto, string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.PUT,
                 Url = VillaAPi + "/api/VillaApi/" + id,
-                Data = dto
-
+                Data = dto,
+                Token = Token
             });
         }
     }

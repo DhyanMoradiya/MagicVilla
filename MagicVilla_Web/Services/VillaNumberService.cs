@@ -14,52 +14,55 @@ namespace MagicVilla_Web.Services
             VillaAPi = configuration.GetValue<string>("ServiceUrls:VillaAPI");
         }
 
-        public async Task<T> CreateAsync<T>(VillaNumberCreateDTO dto)
+        public async Task<T> CreateAsync<T>(VillaNumberCreateDTO dto, string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.POST,
                 Url = VillaAPi + "/api/VillaNumberAPI",
-                Data = dto
+                Data = dto,
+                Token = Token
             });
         }
 
-        public async Task<T> DeleteAsync<T>(int id)
+        public async Task<T> DeleteAsync<T>(int id, string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.DELETE,
-                Url = VillaAPi + "/api/VillaNumberAPI/" + id
+                Url = VillaAPi + "/api/VillaNumberAPI/" + id,
+                Token = Token
             });
         }
 
-        public async Task<T> GetAllAsync<T>()
+        public async Task<T> GetAllAsync<T>(string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.GET,
                 Url = VillaAPi + "/api/VillaNumberAPI",
-
+                Token = Token
             });
         }
 
-        public async Task<T> GetAsync<T>(int id)
+        public async Task<T> GetAsync<T>(int id, string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.GET,
                 Url = VillaAPi + "/api/VillaNumberAPI/" + id,
-
+                Token = Token
             });
         }
 
-        public async Task<T> UpdateAsync<T>(int id, VillaNumberUpdateDTO dto)
+        public async Task<T> UpdateAsync<T>(int id, VillaNumberUpdateDTO dto, string Token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = ApiType.PUT,
                 Url = VillaAPi + "/api/VillaNumberAPI/" + id,
-                Data = dto
+                Data = dto,
+                Token = Token
 
             });
         }
