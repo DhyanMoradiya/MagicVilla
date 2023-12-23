@@ -10,11 +10,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
+builder.Services.AddResponseCaching();
+
+// Add services to the container.
 builder.Services.AddControllers(options =>
 {
-   //options.ReturnHttpNotAcceptable = true;
+    options.CacheProfiles.Add("Default30", new CacheProfile
+    {
+        Duration = 30
+    });
 }).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"))
