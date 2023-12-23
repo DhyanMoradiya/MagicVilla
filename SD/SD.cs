@@ -10,5 +10,7 @@
             DELETE,
             PATCH
         }
+
+        public static string SessionToken { get; set; } = "JWTToken";
     }
 }

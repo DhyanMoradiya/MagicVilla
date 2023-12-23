@@ -1,4 +1,4 @@
-﻿using MagicVilla_Web.Model.Dto;
+﻿using MagicVilla_Web.Models.Dto;
 
 namespace MagicVilla_Web.Services.IServices
 {
@@ -6,6 +6,6 @@ namespace MagicVilla_Web.Services.IServices
     {
 
         Task<T> LoginAsync<T>(LoginRequestDTO loginRequestDTO);
-        Task<T> RegisterAsync<T>(RegisterationRequestDTO registerationRequestDTO)
+        Task<T> RegisterAsync<T>(RegisterationRequestDTO registerationRequestDTO);
     }
 }
