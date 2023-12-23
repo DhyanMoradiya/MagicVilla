@@ -30,12 +30,15 @@ namespace MagicVilla_VillaApi.Controllers.v1
         [HttpGet]
         [ResponseCache(CacheProfileName = "Default30")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<APIResponse> GetVillas()
+        public async Task<APIResponse> GetVillas([FromQuery] string? search)
         {
             try
             {
-                IEnumerable<Villa> vilaList = await _dbVilla.GetAllAsync();
-                _response.Result = vilaList;
+                IEnumerable<Villa> villaList = await _dbVilla.GetAllAsync();
+                if (!string.IsNullOrEmpty(search)){
+                    villaList  = villaList.Where(u => u.Name.Contains(search));
+                }
+                _response.Result = villaList;
                 _response.StatusCode = HttpStatusCode.OK;
             }
             catch (Exception e)
