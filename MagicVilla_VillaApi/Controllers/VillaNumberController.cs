@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using MagicVilla_VillaApi.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MagicVilla_VillaApi.Controllers
 {
@@ -26,6 +27,10 @@ namespace MagicVilla_VillaApi.Controllers
 
 
         [HttpGet]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<APIResponse> GetVillaNumbers()
         {
             try
@@ -44,7 +49,10 @@ namespace MagicVilla_VillaApi.Controllers
 
         }
 
+        [Authorize]
         [HttpGet("{villaNo:int}", Name = "GetVillaNumber")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -77,6 +85,9 @@ namespace MagicVilla_VillaApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -120,6 +131,9 @@ namespace MagicVilla_VillaApi.Controllers
 
 
         [HttpDelete("{villaNo:int}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -154,6 +168,9 @@ namespace MagicVilla_VillaApi.Controllers
         }
 
         [HttpPut("{villaNo:int}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
