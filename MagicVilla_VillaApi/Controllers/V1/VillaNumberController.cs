@@ -6,6 +6,7 @@ using System.Net;
 using MagicVilla_VillaApi.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 
 
 namespace MagicVilla_VillaApi.Controllers.v1
@@ -37,13 +38,15 @@ namespace MagicVilla_VillaApi.Controllers.v1
         [HttpGet]
         [ResponseCache(CacheProfileName = "Default30")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<APIResponse> GetVillaNumbers()
+        public async Task<APIResponse> GetVillaNumbers([FromQuery] int PageSize = 0, [FromQuery] int PageNo = 1)
         {
             try
             {
-                IEnumerable<VillaNumber> vilaNumberList = await _dbVillaNumber.GetAllAsync(IncludeProperties: "Villa");
+                IEnumerable<VillaNumber> vilaNumberList = await _dbVillaNumber.GetAllAsync(IncludeProperties: "Villa", PageSize : PageSize, PageNo : PageNo);
                 _response.Result = vilaNumberList;
                 _response.StatusCode = HttpStatusCode.OK;
+                var pagination = new Pagination { PageNo = PageNo, PageSize = PageSize };
+                Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(pagination));
             }
             catch (Exception e)
             {

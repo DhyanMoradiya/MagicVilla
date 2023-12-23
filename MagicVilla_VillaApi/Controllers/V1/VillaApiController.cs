@@ -6,7 +6,7 @@ using MagicVilla_VillaApi.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-
+using Newtonsoft.Json;
 using System.Net;
 
 
@@ -30,14 +30,17 @@ namespace MagicVilla_VillaApi.Controllers.v1
         [HttpGet]
         [ResponseCache(CacheProfileName = "Default30")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<APIResponse> GetVillas([FromQuery] string? search)
+        public async Task<APIResponse> GetVillas([FromQuery] string? search, [FromQuery] int PageSize = 0, [FromQuery] int PageNo = 1)
         {
             try
             {
-                IEnumerable<Villa> villaList = await _dbVilla.GetAllAsync();
+                IEnumerable<Villa> villaList = await _dbVilla.GetAllAsync(PageSize: PageSize, PageNo: PageNo);
                 if (!string.IsNullOrEmpty(search)){
                     villaList  = villaList.Where(u => u.Name.Contains(search));
                 }
+
+                var pagination = new Pagination { PageNo = PageNo, PageSize = PageSize };
+                Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(pagination) );
                 _response.Result = villaList;
                 _response.StatusCode = HttpStatusCode.OK;
             }
