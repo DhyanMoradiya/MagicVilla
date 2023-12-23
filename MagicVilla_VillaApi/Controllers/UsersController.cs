@@ -1,4 +1,5 @@
-﻿using MagicVilla_VillaApi.Model;
+﻿
+using MagicVilla_VillaApi.Model;
 using MagicVilla_VillaApi.Model.Dto;
 using MagicVilla_VillaApi.Repository.IRepository;
 using Microsoft.AspNetCore.Http;
@@ -8,8 +9,9 @@ using System.Text.RegularExpressions;
 
 namespace MagicVilla_VillaApi.Controllers
 {
-    [Route("api/UsersAuth")]
+    [Route("api/v{version:ApiVersion}/UsersAuth")]
     [ApiController]
+    [ApiVersionNeutral]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepo;

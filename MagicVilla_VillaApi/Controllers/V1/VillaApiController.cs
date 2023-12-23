@@ -1,73 +1,73 @@
-﻿using AutoMapper;
-using MagicVilla_VillaApi.Model.Dto;
+﻿
+using AutoMapper;
 using MagicVilla_VillaApi.Model;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using MagicVilla_VillaApi.Model.Dto;
 using MagicVilla_VillaApi.Repository.IRepository;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 
-namespace MagicVilla_VillaApi.Controllers
+using System.Net;
+
+
+namespace MagicVilla_VillaApi.Controllers.v1
 {
-    [Route("api/VillaNumberApi")]
+    [Route("api/v{version:ApiVersion}/VillaApi")]
     [ApiController]
-    public class VillaNumberController : ControllerBase
+    [ApiVersion("1.0")]
+    public class VillaApiController : ControllerBase
     {
-        private readonly IVillaNumberRepository _dbVillaNumber;
+        private readonly IVillaRepository _dbVilla;
         private APIResponse _response;
         private readonly IMapper _mapper;
-        private readonly IVillaRepository _dbVilla;
-        public VillaNumberController(IVillaNumberRepository dbVillaNumber,IVillaRepository dbVilla, IMapper mapper)
-        {
-            _dbVillaNumber = dbVillaNumber;
+        public VillaApiController(IVillaRepository  dbVilla, IMapper mapper) { 
+            _dbVilla = dbVilla;
             _mapper = mapper;
             _response = new APIResponse();
-            _dbVilla = dbVilla;
         }
 
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<APIResponse> GetVillaNumbers()
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<APIResponse> GetVillas()
         {
             try
             {
-                IEnumerable<VillaNumber> vilaNumberList = await _dbVillaNumber.GetAllAsync(IncludeProperties: "Villa");
-                _response.Result = vilaNumberList;
+                IEnumerable<Villa> vilaList = await _dbVilla.GetAllAsync();
+                _response.Result = vilaList;
                 _response.StatusCode = HttpStatusCode.OK;
             }
             catch (Exception e)
             {
                 _response.ErrorMessages.Add(e.Message);
                 _response.IsSuccess = false;
-
+               
             }
             return _response;
 
         }
 
-        [HttpGet("{villaNo:int}", Name = "GetVillaNumber")]
+        [HttpGet("{id:int}", Name = "GetVilla")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> GetVillaNumber(int villaNo)
-        {
+        public async Task<ActionResult<APIResponse>> GetVilla(int id) {
             try
             {
-                if (villaNo == 0)
+                if (id == 0)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
-                var villaNumber = await _dbVillaNumber.GetAsync(u => u.VillaNo == villaNo);
-                if (villaNumber == null)
+                var villa = await _dbVilla.GetAsync(u => u.Id == id);
+                if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
                     return NotFound(_response);
                 }
-                _response.Result = _mapper.Map<VillaNumberDTO>(villaNumber);
+                _response.Result = _mapper.Map<VillaDTO>(villa);
                 _response.StatusCode = HttpStatusCode.OK;
             }
             catch (Exception e)
@@ -79,13 +79,13 @@ namespace MagicVilla_VillaApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles ="Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<APIResponse>> CreateVillaNumber([FromBody] VillaNumberCreateDTO createDTO)
+        public async Task<ActionResult<APIResponse>> CreateVilla([FromBody] VillaCreateDTO createDTO)
         {
             try
             {
@@ -96,24 +96,17 @@ namespace MagicVilla_VillaApi.Controllers
                     return BadRequest(_response);
 
                 }
-                if (await _dbVillaNumber.GetAsync(u => u.VillaNo == createDTO.VillaNo) != null)
+                if (await _dbVilla.GetAsync(u => u.Name == createDTO.Name) != null)
                 {
-                    _response.ErrorMessages.Add("Villa Number alredy Exists");
+                    ModelState.AddModelError("CustomError", "Villa Name alredy Exists");
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     _response.IsSuccess = false;
                     return BadRequest(_response);
-                }
-                if (await _dbVilla.GetAsync(u => u.Id == createDTO.VillaId) == null)
-                {
-                    _response.ErrorMessages.Add("Villa is not Exists");
-                    _response.StatusCode = HttpStatusCode.BadRequest;
-                    _response.IsSuccess = false;
-                    return BadRequest(_response);
-                }
-                VillaNumber villaNumber = _mapper.Map<VillaNumber>(createDTO);
-                await _dbVillaNumber.CreateAsync(villaNumber);
+                }   
+                Villa villa = _mapper.Map<Villa>(createDTO);
+                await _dbVilla.CreateAsync(villa);
                 _response.StatusCode = HttpStatusCode.OK;
-                return CreatedAtRoute("GetVillaNumber", new { villaNo = villaNumber.VillaNo }, _response);
+                return CreatedAtRoute("GetVilla",new { id = villa.Id }, _response);
             }
             catch (Exception e)
             {
@@ -124,31 +117,31 @@ namespace MagicVilla_VillaApi.Controllers
         }
 
 
-        [HttpDelete("{villaNo:int}")]
+        [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse>> DeleteVillaNumber(int villaNo)
+        public async Task<ActionResult<APIResponse>> DeleteVilla(int id)
         {
             try
             {
-                if (villaNo == 0)
+                if (id == 0)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
-                var villaNumber = await _dbVillaNumber.GetAsync(v => v.VillaNo == villaNo);
-                if (villaNumber == null)
+                var villa = await _dbVilla.GetAsync(v => v.Id == id);
+                if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
                     return NotFound(_response);
                 }
-                await _dbVillaNumber.RemoveAsync(villaNumber);
+                await _dbVilla.RemoveAsync(villa);
 
                 _response.StatusCode = HttpStatusCode.OK;
             }
@@ -158,42 +151,82 @@ namespace MagicVilla_VillaApi.Controllers
                 _response.IsSuccess = false;
             }
             return _response;
-
+            
         }
 
-        [HttpPut("{villaNo:int}")]
+        [HttpPut("{id:int}")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse>> UpdateVillaNumber(int villaNo, [FromBody] VillaNumberUpdateDTO updateDTO)
-        {
+        public async Task<ActionResult<APIResponse>> UpdateVilla(int id,[FromBody] VillaUpdateDTO updateDTO) {
             try
             {
-                if (updateDTO == null || updateDTO.VillaNo != villaNo)
+                if (updateDTO == null || updateDTO.Id != id)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
-                var villaNumber = await _dbVillaNumber.GetAsync(u => u.VillaNo == updateDTO.VillaNo, Trecked: false);
-                if (villaNumber == null)
+                var villa = await _dbVilla.GetAsync(u => u.Id == updateDTO.Id, Trecked: false);
+                if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.IsSuccess = false;
                     return NotFound(_response);
                 }
-                if (await _dbVilla.GetAsync(u => u.Id == updateDTO.VillaId) == null)
+                Villa modal = _mapper.Map<Villa>(updateDTO);
+                await _dbVilla.UpdateAsync(modal);
+
+                _response.StatusCode = HttpStatusCode.OK;
+            }
+            catch (Exception e)
+            {
+                _response.ErrorMessages.Add(e.Message);
+                _response.IsSuccess = false;
+            }
+            return _response;
+        }
+
+        [HttpPatch("{id:int}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<APIResponse>> UpdatePartialVilla(int id, JsonPatchDocument<VillaUpdateDTO> updateDTOPatch)
+        {
+            try
+            {
+                if (updateDTOPatch == null | id == 0)
                 {
-                    _response.ErrorMessages.Add("Villa is not Exists");
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
-                VillaNumber modal = _mapper.Map<VillaNumber>(updateDTO);
-                await _dbVillaNumber.UpdateAsync(modal);
+                var villa = await _dbVilla.GetAsync(u => u.Id == id, Trecked: false);
+
+                if (villa == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.IsSuccess = false;
+                    return NotFound(_response);
+                }
+
+                var updateDTO = _mapper.Map<VillaUpdateDTO>(villa);
+                updateDTOPatch.ApplyTo(updateDTO, ModelState);
+                if (!ModelState.IsValid)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    return BadRequest(_response);
+                }
+
+                var model = _mapper.Map<Villa>(updateDTO);
+                await _dbVilla.UpdateAsync(model);
 
                 _response.StatusCode = HttpStatusCode.OK;
             }
